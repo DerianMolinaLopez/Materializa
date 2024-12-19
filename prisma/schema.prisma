@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+model Producto {
+  id                String   @id @default(uuid())
+  NombreProducto    String   @unique  
+  Descripcion       String
+  PrecioProducto    Float
+  CategoriaID       String
+  existencias       Int
+  limiteExistencia  Int
+  categoria         Categoria @relation(fields: [CategoriaID], references: [idCategoria])
+  ordenesDetalle    OrdenesDetalle[]
+}
+
+model Categoria {
+  idCategoria       String     @id @default(uuid())
+  NombreCategorias  String     @unique
+  descripcion       String
+  productos         Producto[]
+}
+
+model Usuario {
+  id        String   @id @default(uuid())
+  Nombre    String
+  Apellidos String
+  email     String   @unique
+  password  String
+  role      String
+  ordenes   Orden[]
+}
+
+model Orden {
+  id        String           @id @default(uuid())
+  OrderId   String
+  productId String
+  quantity  Int
+  SubTotal  Int
+  cliente   String
+  usuario   Usuario          @relation(fields: [cliente], references: [id])
+  detalles  OrdenesDetalle[]
+}
+
+model OrdenesDetalle {
+  id        String   @id @default(uuid())
+  orden_id  String
+  product_id String
+  Cantidad  Int
+  orden     Orden    @relation(fields: [orden_id], references: [id])
+  producto  Producto @relation(fields: [product_id], references: [id])
+}
