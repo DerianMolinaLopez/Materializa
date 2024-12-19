@@ -7,5 +7,6 @@ import { PrismaCliModule } from 'src/common/prisma-cli/prisma-module.module';
   imports: [PrismaCliModule], // Asegúrate de que PrismaCliModule esté importado
   providers: [CategoriasService],
   controllers: [CategoriasController],
+  exports: [CategoriasService]
 })
 export class CategoriasModule {}
