@@ -3,6 +3,7 @@ import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { PrismaCliService } from 'src/common/prisma-cli/prisma-cli.service';
 import { CategoriasService } from 'src/categorias/categorias.service';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class ProductosService {
@@ -11,6 +12,7 @@ export class ProductosService {
 
   }
   async create(createProductoDto: CreateProductoDto) {
+    console.log(createProductoDto)
     try{
              //verificamos que la categoria del producto exista
         if(this.categoriasService.findOne(createProductoDto.CategoriaID)){
@@ -33,19 +35,63 @@ export class ProductosService {
        }
   }
 
-  findAll() {
-    return ;
+  async findAll() {
+    return await this.prisma.producto.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} producto`;
+  async findOne(id: string) {//como estandar este metodo se manda como otros
+    try{
+      //id
+      if(isUUID(id)){
+        const producto = this.prisma.producto.findUnique({
+          where:{
+            id:id
+          }
+        })
+        return producto
+      }
+      //nombre
+      if(typeof id === 'string'){
+        const producto = this.prisma.producto.findUnique({
+          where:{
+            NombreProducto:id
+          }
+        })
+        return producto
+      }
+      
+    }catch(e){
+       if(e.code === 'P2016'){
+         throw new BadGatewayException('Producto no encontrado')
+       }
+       throw new BadGatewayException('Error en el servidor')
+    }
   }
 
-  update(id: number, updateProductoDto: UpdateProductoDto) {
-    return `This action updates a #${id} producto`;
+  async update(id: string, updateProductoDto: UpdateProductoDto) {
+    const producto = this.findOne(id.toString())
+    if(producto){
+      return this.prisma.producto.update({
+        where:{
+          id:id
+        },
+        data:updateProductoDto
+      })
+    
+    }
+     return "Producto actualizado con exito"
+    }
+  
+  
+
+  async remove(id: string) {
+    await this.prisma.producto.delete({
+      where:{
+        id:id
+      }
+     })
+    return `El producto fue eliminado`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} producto`;
-  }
+  
 }

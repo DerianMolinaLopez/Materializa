@@ -38,7 +38,13 @@ model Usuario {
   email     String   @unique
   password  String
   role      String
+  Rol      Rol      @relation(fields: [role], references: [id])
   ordenes   Orden[]
+}
+model Rol {
+  id   String @id @default(uuid())
+  name String
+  users Usuario[]
 }
 
 model Orden {
