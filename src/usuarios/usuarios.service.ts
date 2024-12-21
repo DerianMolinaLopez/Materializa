@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
-import bcrypt from 'bcrypt';
+
 import { PrismaCliService } from 'src/common/prisma-cli/prisma-cli.service';
 import { isUUID } from 'class-validator';
 
@@ -11,29 +11,35 @@ export class UsuariosService {
   constructor(private readonly prisma: PrismaCliService) {}
 
   async create(createUsuarioDto: CreateUsuarioDto) {
-    console.log(createUsuarioDto)
-    try{
-      const UsuarioExistente = await this.prisma.usuario.findUnique({
+    console.log('Datos recibidos:', createUsuarioDto);
+
+    try {
+      // Verificar si el usuario ya existe en la base de datos
+      const usuarioExistente = await this.prisma.usuario.findUnique({
         where: { email: createUsuarioDto.email },
       });
-      if (UsuarioExistente) throw new HttpException('Usuario ya existe', 400);
-      
-      createUsuarioDto.password =  bcrypt.hashSync(createUsuarioDto.password, 10);
-  
+
+      if (usuarioExistente) {
+        throw new HttpException('Usuario ya existe', 400);
+      }
+      createUsuarioDto.Nombre = createUsuarioDto.Nombre.toLowerCase();
+
+      // Crear el nuevo usuario
       await this.prisma.usuario.create({
         data: { ...createUsuarioDto },
       });
+
       return 'Usuario creado con éxito';
-    }catch(e){
-      if(e.code === 'P2002'){
+    } catch (e) {
+      if (e.code === 'P2002') {
+        // Error de violación de clave única (por ejemplo, email duplicado)
         throw new HttpException('Usuario ya existe', 400);
-      }else{
-        console.log(e)
+      } else {
+        console.error('Error en el servidor:', e);
         throw new HttpException('Error en el servidor', 500);
       }
-    
+    }
   }
-}
 
   async findAll() {
     return await this.prisma.usuario.findMany();
