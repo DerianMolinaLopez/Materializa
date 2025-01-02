@@ -1,5 +1,6 @@
 import { IsNumber, IsString, MinLength,Min } from "class-validator";
 
+
 export class CreateProductoDto {
     @IsString()
     @MinLength(5)
@@ -19,5 +20,8 @@ export class CreateProductoDto {
     @Min(1)
     @IsNumber()
     limiteExistencia: number;
+    @IsNumber()
+    price:number;
+
 
 }

@@ -18,6 +18,7 @@ model Producto {
   Descripcion       String
   PrecioProducto    Float
   CategoriaID       String
+  price             Float
   existencias       Int
   limiteExistencia  Int
   categoria         Categoria @relation(fields: [CategoriaID], references: [idCategoria])
@@ -49,20 +50,17 @@ model Rol {
 
 model Orden {
   id        String           @id @default(uuid())
-  OrderId   String
-  productId String
-  quantity  Int
-  SubTotal  Int
-  cliente   String
-  usuario   Usuario          @relation(fields: [cliente], references: [id])
-  detalles  OrdenesDetalle[]
+  Usuario   String
+  usuario   Usuario           @relation(fields: [Usuario], references: [id])
+  detalles  OrdenesDetalle[]  // Relación uno-a-muchos con `OrdenesDetalle`.
 }
 
 model OrdenesDetalle {
-  id        String   @id @default(uuid())
-  orden_id  String
+  id         String   @id @default(uuid())
+  orden_id   String
   product_id String
-  Cantidad  Int
-  orden     Orden    @relation(fields: [orden_id], references: [id])
-  producto  Producto @relation(fields: [product_id], references: [id])
+  quantity   Int
+  SubTotal   Int
+  orden      Orden     @relation(fields: [orden_id], references: [id])
+  producto   Producto  @relation(fields: [product_id], references: [id])
 }
