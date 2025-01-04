@@ -1,14 +1,18 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
-
+import * as bcrypt from 'bcrypt';
 import { PrismaCliService } from 'src/common/prisma-cli/prisma-cli.service';
 import { isUUID } from 'class-validator';
-
+import LoginUsuarioDto from './dto/login-usuario.dto';
+import { JwtService } from '@nestjs/jwt';
+import createToken from 'src/common/jwt/createToken.jtw';
 
 @Injectable()
 export class UsuariosService {
-  constructor(private readonly prisma: PrismaCliService) {}
+  constructor(private readonly prisma: PrismaCliService,
+              private readonly jwt: JwtService
+  ) {}
 
   async create(createUsuarioDto: CreateUsuarioDto) {
     console.log('Datos recibidos:', createUsuarioDto);
@@ -23,6 +27,7 @@ export class UsuariosService {
         throw new HttpException('Usuario ya existe', 400);
       }
       createUsuarioDto.Nombre = createUsuarioDto.Nombre.toLowerCase();
+      createUsuarioDto.password = bcrypt.hashSync(createUsuarioDto.password,10)//!hash del password
 
       // Crear el nuevo usuario
       await this.prisma.usuario.create({
@@ -39,6 +44,25 @@ export class UsuariosService {
         throw new HttpException('Error en el servidor', 500);
       }
     }
+  }
+  
+  async login(loginUsuarioDto:LoginUsuarioDto){
+    try{
+      //esto regresa un jwt 
+      const usuario = await this.prisma.usuario.findUnique({
+        where:{
+          email:loginUsuarioDto.email,
+        }
+      })
+      if(bcrypt.compareSync(loginUsuarioDto.password,usuario.password)){
+        const {Nombre,email,id} = usuario
+        return createToken({name:Nombre,email,id,jwt:this.jwt})
+      }
+    }catch(e){
+      console.error('Error en el servidor:', e);
+      throw new HttpException('Error en el servidor', 500);
+    }
+
   }
 
   async findAll() {

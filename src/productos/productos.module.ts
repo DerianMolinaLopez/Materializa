@@ -10,4 +10,6 @@ import { CategoriasModule } from 'src/categorias/categorias.module';
   controllers: [ProductosController],
   providers: [ProductosService,PrismaCliService],
 })
-export class ProductosModule {}
+export class ProductosModule {
+  //un middleware de autorizacion para proteger las acciones y las rutas
+}

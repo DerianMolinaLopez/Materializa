@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ProductosService } from './productos.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
+import { AuthGuard } from 'src/common/guard/Auth.guard';
 
 @Controller('productos')
 export class ProductosController {
@@ -13,7 +14,7 @@ export class ProductosController {
   async create(@Body() createProductoDto: CreateProductoDto) {
     return this.productosService.create(createProductoDto);
   }
-
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.productosService.findAll();

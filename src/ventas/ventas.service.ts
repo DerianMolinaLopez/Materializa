@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { CreateVentaDto } from './dto/create-venta.dto';
 import { ProductosService } from 'src/productos/productos.service';
 import { PrismaCliService } from 'src/common/prisma-cli/prisma-cli.service';
-import e from 'express';
+
 
 
 
