@@ -55,8 +55,10 @@ export class UsuariosService {
         }
       })
       if(bcrypt.compareSync(loginUsuarioDto.password,usuario.password)){
-        const {Nombre,email,id} = usuario
-        return createToken({name:Nombre,email,id,jwt:this.jwt})
+        const {Nombre,email,id,role} = usuario
+        const token = createToken({name:Nombre,email,role,id,jwt:this.jwt})
+  
+        return token
       }
     }catch(e){
       console.error('Error en el servidor:', e);

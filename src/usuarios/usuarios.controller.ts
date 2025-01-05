@@ -15,16 +15,21 @@ export class UsuariosController {
     return this.usuariosService.create(createUsuarioDto);
   }
   @Post('login')
-  login(
+  async login(
     @Body() loginUsuarioDto: LoginUsuarioDto,
-    @Res({ passthrough: true }) response: Response,) {
-   const token = this.usuariosService.login(loginUsuarioDto);
-    response.cookie('token', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const token = await this.usuariosService.login(loginUsuarioDto);
+    console.log(token)
+    // Establecer la cookie en la respuesta
+    response.cookie('token', token.token, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production', // Asegúrate de usar secure en producción
+      sameSite: 'strict',
+      maxAge: 30000, // 30 segundos
     });
-    return 'Bienvenido'; // Devuelve una respuesta simple
+
+    return { message: 'bienvenido' }; // Devuelve un objeto JSON simple
   }
 
   
