@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 
 import * as jwt from 'jsonwebtoken';
 import AuthResponse from '../entities/Auth.entity';
@@ -8,11 +8,12 @@ import Roles from 'src/Enum/Roles';
 
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AuthGuardSupervisor implements CanActivate {
   constructor(private  readonly prisma:PrismaCliService) {}
   async canActivate(context: ExecutionContext): Promise<boolean>  {
     const request: AuthResponse = context.switchToHttp().getRequest(); 
     const { headers } = request; 
+    if(!headers.cookie) throw new BadRequestException('No tienes un token para autorizarte');
     const token =headers.cookie.split('=')[1]; //separamos las partes del token
     //verificamos quien es el usuario
 
@@ -37,7 +38,10 @@ export class AuthGuard implements CanActivate {
         })
         //SOLAMENTE HAY DOS ROLES, ASI QUE CON EL NUEVO QUE AGREGYEMOS
         //DEBERA REGRESAR UN FALSE
-        if(valido.name === Roles.CAJERO ||valido.id === Roles.ENCARDADO  ) return true
+        //s
+        // if(valido.name === Roles.ENCARDADO  ) return true
+        if(valido.name !== Roles.ENCARDADO) throw new UnauthorizedException('Solo los encargados pueden modificar ventas ya realizadas');
+        return true
       }else{
            return false
       }
@@ -45,7 +49,7 @@ export class AuthGuard implements CanActivate {
 
     } catch (error) {
       console.error('Error al verificar el token:', error);
-      throw new UnauthorizedException('Token inválido');
+      throw new UnauthorizedException(error.message);
     }
   }
 }
