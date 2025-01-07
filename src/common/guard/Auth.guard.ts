@@ -4,7 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import AuthResponse from '../entities/Auth.entity';
 import { PrismaCliService } from '../prisma-cli/prisma-cli.service';
 import UsuarioAuth from '../entities/UsuarioAuth.entity';
-
+import Roles from 'src/Enum/Roles';
 
 
 @Injectable()
@@ -35,8 +35,9 @@ export class AuthGuard implements CanActivate {
             id:usuario.role
           }
         })
- 
-        if(valido.id === usuario.role) return true
+        //SOLAMENTE HAY DOS ROLES, ASI QUE CON EL NUEVO QUE AGREGYEMOS
+        //DEBERA REGRESAR UN FALSE
+        if(valido.name === Roles.CAJERO ||valido.id === Roles.CAJERO  ) return true
       }else{
            return false
       }
