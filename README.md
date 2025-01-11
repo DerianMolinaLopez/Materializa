@@ -12,15 +12,16 @@ llevar a cabo una api de ejemplo
  - Se implementa un sistema de autenticación con JWT.
  - Se implementa un sistema de roles y permisos.
  - Se implementa un sistema de paginación y filtros.
-
+El proyecto incorpora un middleware que aunque sea solo de verificacion de existencias,
+es contrastado con un Guard de autorizacion
 ## Instalacion
 1. Clonar el repositorio.
 2. Instalar las dependencias con `npm install`.
 3. crear un archivo `.env` en la raiz del proyecto y agregar las siguientes variables de entorno:
 ```
-DATABASE_URL
-SECRET_KET 
-JWT_SECRET 
+DATABASE_URL ---> SOLO bases de datos RELACIONALES
+SECRET_KET ---> Sal para encriptacion de contraseñas
+JWT_SECRET --->Para token de autorizacion
 ```
 4. Ejecutar el el contenedor de docker para levatar la base de datos
 ```
