@@ -4,6 +4,8 @@
 
 
 VentasApi
+El proyecto tiene como objetivo la experimentacion del entonro de desarrollo de NestJs para 
+llevar a cabo una api de ejemplo
  - API RESTful para la gestión de ventas de productos.
  - El objetivo es probar y realizar una serie de practicas con nestjs y prismaorm.
  - Se implementa un CRUD para la gestión de ventas de productos.
@@ -17,7 +19,8 @@ VentasApi
 3. crear un archivo `.env` en la raiz del proyecto y agregar las siguientes variables de entorno:
 ```
 DATABASE_URL
-SECRET_KET = 
+SECRET_KET 
+JWT_SECRET 
 ```
 4. Ejecutar el el contenedor de docker para levatar la base de datos
 ```
@@ -27,3 +30,4 @@ docker-compose up
 ```
 POST http://localhost:3000/seed
 ```
+
